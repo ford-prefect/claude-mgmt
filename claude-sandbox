@@ -55,6 +55,7 @@ main() {
     fi
 
     exec podman run --rm -it \
+        --init \
         --name "$container_name" \
         --userns=keep-id \
         --security-opt=no-new-privileges \

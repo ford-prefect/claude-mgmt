@@ -50,10 +50,6 @@ main() {
 
     local container_name="${CONTAINER_PREFIX}-${name}"
 
-    if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
-        echo "Warning: ANTHROPIC_API_KEY is not set" >&2
-    fi
-
     exec podman run --rm -it \
         --init \
         --name "$container_name" \

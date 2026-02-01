@@ -1,0 +1,70 @@
+#!/bin/bash
+set -euo pipefail
+
+IMAGE="claude-code"
+CONTAINER_PREFIX="claude-code"
+
+usage() {
+    echo "Usage: $(basename "$0") [OPTIONS] DIRECTORY"
+    echo
+    echo "Run Claude Code in an isolated Podman container"
+    echo
+    echo "Arguments:"
+    echo "  DIRECTORY    Workspace directory (required)"
+    echo
+    echo "Options:"
+    echo "  -n, --name NAME    Container name suffix (default: directory basename)"
+    echo "  -h, --help         Show this help"
+    exit "${1:-0}"
+}
+
+main() {
+    local workspace=""
+    local name=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -n|--name) name="$2"; shift 2 ;;
+            -h|--help) usage 0 ;;
+            -*) echo "Unknown option: $1" >&2; usage 1 ;;
+            *) workspace="$1"; shift ;;
+        esac
+    done
+
+    if [[ -z "$workspace" ]]; then
+        echo "Error: workspace directory is required" >&2
+        echo >&2
+        usage 1
+    fi
+
+    workspace="$(realpath "$workspace")"
+
+    if [[ ! -d "$workspace" ]]; then
+        echo "Error: '$workspace' is not a directory" >&2
+        exit 1
+    fi
+
+    if [[ -z "$name" ]]; then
+        name="$(basename "$workspace")"
+    fi
+
+    local container_name="${CONTAINER_PREFIX}-${name}"
+
+    if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
+        echo "Warning: ANTHROPIC_API_KEY is not set" >&2
+    fi
+
+    exec podman run --rm -it \
+        --name "$container_name" \
+        --userns=keep-id \
+        --security-opt=no-new-privileges \
+        --cap-drop=ALL \
+        --memory=4g \
+        --cpus=2 \
+        -v "$workspace:/workspace:Z" \
+        -v "$HOME/.claude:/home/$USER/.claude:Z" \
+        -w /workspace \
+        "$IMAGE"
+}
+
+main "$@"

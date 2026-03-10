@@ -57,8 +57,8 @@ main() {
         --userns=keep-id \
         --security-opt=no-new-privileges \
         --cap-drop=ALL \
-        --memory=4g \
-        --cpus=2 \
+        --memory=16g \
+        --cpus=8 \
         -v "$workspace:/workspace:Z" \
         -v "$HOME/.claude:/home/$CONTAINER_USER/.claude:Z" \
         -w /workspace \

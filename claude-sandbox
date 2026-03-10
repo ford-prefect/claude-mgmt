@@ -1,8 +1,9 @@
 #!/bin/bash
-set -euo pipefail
+set -eu
 
 IMAGE="claude-code"
 CONTAINER_PREFIX="claude-code"
+CONTAINER_USER=claude
 
 usage() {
     echo "Usage: $(basename "$0") [OPTIONS] DIRECTORY"
@@ -59,7 +60,7 @@ main() {
         --memory=4g \
         --cpus=2 \
         -v "$workspace:/workspace:Z" \
-        -v "$HOME/.claude:/home/$USER/.claude:Z" \
+        -v "$HOME/.claude:/home/$CONTAINER_USER/.claude:Z" \
         -w /workspace \
         "$IMAGE"
 }

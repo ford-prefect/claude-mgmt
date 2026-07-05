@@ -61,6 +61,7 @@ main() {
         --cpus=8 \
         -v "$workspace:/workspace:Z" \
         -v "$HOME/.claude:/home/$CONTAINER_USER/.claude:Z" \
+        -v "$HOME/.claude.json:/home/$CONTAINER_USER/.claude.json:Z" \
         -w /workspace \
         "$IMAGE"
 }
